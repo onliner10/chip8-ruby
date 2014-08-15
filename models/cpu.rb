@@ -1,3 +1,5 @@
+require "./models/cpu_commands/registry_operation_commands"
+
 class CPU
 
 	def initialize(memory)
@@ -8,26 +10,28 @@ class CPU
 	end
 
 	def do_cycle
+		opcode = @memory.instruction_at(self.PC)
+		foundCommands = self.class.instance_methods(false).grep(/opcode_.*/)
+
+		raise "More than one (or none) command found for opcode #{opcode} (found commands: #{foundCommands}" unless foundCommands.one?
+
+		send(foundCommands.first, opcode)
+
+		self.PC += 2
 	end
 
 	private
 	def define_registers
 		@registers = {}
 
-		private_registers = ["PC", "SP"]
-		registers = Array.new + private_registers
+		registers = ["PC", "SP", "I"]
 
-		16.times { |n| registers.push((n+1).to_s(16).upcase) }
-		registers.push("I")
+		#registers V1 to VF
+		1.upto(15) { |n| registers.push("V" + n.to_s(16).upcase) }
 
 		registers.each do |register_name|
-			self.class.send(:define_method, "V#{register_name}") { @registers["V#{register_name}"] }
-			self.class.send(:define_method, "V#{register_name}=(val)") { @registers["V#{register_name}"] = val }
-		end
-
-		private_registers.each do |privateRegister|
-			self.class.instance_eval { private privateRegister.to_sym }
+			self.class.send(:define_method, "#{register_name}") { @registers["#{register_name}"] }
+			self.class.send(:define_method, "#{register_name}=") { |v| @registers["#{register_name}"] = v }
 		end
 	end
-
 end

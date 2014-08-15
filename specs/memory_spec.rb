@@ -11,3 +11,16 @@ describe Memory, "#load" do
 
   end
 end
+
+describe Memory, "#instruction_at" do
+  it "gives instruction at specified address" do
+    memory = Memory.new
+    memory.load("200".hex, "65".to_i(16))
+  	memory.load("201".hex, "55".to_i(16))
+
+  	instruction = memory.instruction_at("200".hex)
+
+    expect(instruction).to eq("6555")
+
+  end
+end
