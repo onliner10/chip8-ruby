@@ -11,13 +11,18 @@ class CPU
 
 	def do_cycle
 		opcode = @memory.instruction_at(self.PC)
+		self.PC += 2
+
 		foundCommands = self.class.instance_methods(false).grep(/opcode_.*/)
 
-		raise "More than one (or none) command found for opcode #{opcode} (found commands: #{foundCommands}" unless foundCommands.one?
+		matchingCommands = foundCommands.select do |command| 
+			regex = Regexp.new command.to_s.gsub('opcode_', '').gsub('X', '[0-9A-F]')
+			opcode.upcase =~ regex
+		end
 
-		send(foundCommands.first, opcode)
+		raise "More than one (or none) command found for opcode #{opcode} (found commands: #{matchingCommands}" unless matchingCommands.one?
 
-		self.PC += 2
+		send(matchingCommands.first, opcode)
 	end
 
 	private
