@@ -45,7 +45,7 @@ class CPU
 			end
 		end
 
-		send(matchingCommand, opcode)
+		send(matchingCommand)
 
 		self.methods.grep(/((var|registry)_.*)/).each do |helper|
 			self.class.send(:remove_method, "#{helper}")

@@ -2,16 +2,16 @@ require "./models/cpu"
 require "./specs/helpers/cpu_helper"
 
 class CPU
-	def opcode_9XY9(opcode)
+	def opcode_9XY9
 		self.VE = registry_X
 		self.VF = registry_Y
 	end
 
-	def opcode_9X98(opcode)
+	def opcode_9X98
 		self.registry_X = 2
 	end
 
-	def opcode_9KK7(opcode)
+	def opcode_9KK7
 		self.VE = var_K
 	end
 end
