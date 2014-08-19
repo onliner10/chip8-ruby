@@ -14,42 +14,49 @@ class CPU
 		opcode = @memory.instruction_at(self.PC)
 		self.PC += 2
 
+		self.send(opcode)
+	end
+
+	def method_missing(name)
+		throw NoMethodError.new("Method #{name} not found") unless name =~ /[0-9a-fA-F]+/
+
 		foundCommands = self.class.instance_methods(false).grep(/opcode_.*/)
 
-		matchingCommands = foundCommands.select do |command| 
+		matchingMethods = foundCommands.select do |command| 
 			regex = Regexp.new command.to_s.gsub('opcode_', '').gsub(/[G-Z]/, '[0-9A-F]')
-			opcode.upcase =~ regex
+			name.upcase =~ regex
 		end
 
-		raise "More than one (or none) command found for opcode #{opcode} (found commands: #{matchingCommands}" unless matchingCommands.one?
+		raise "More than one (or none) command found for opcode #{name} (found commands: #{matchingCommands})" unless matchingMethods.one?
 
-		matchingCommand = matchingCommands.first
-		commandVariables = matchingCommand.to_s.scan(/([G-Z])/).uniq.map { |x| x.first}
+		matchingMethod = matchingMethods.first
+		helper = Class.new
 
-		commandVariables.map do |variable|
-			variableValue = matchingCommand.to_s.gsub('opcode_','').split('').
+		variables = matchingMethod.to_s.scan(/([G-Z])/).uniq.map { |x| x.first}
+		variables.map do |variable|
+			variableValue = matchingMethod.to_s.gsub('opcode_','').split('').
 											map.with_index(0).
 											select { |c,i| c == variable}.
-											map {|c,i| opcode[i]}.join
-
-			self.class.send(:define_method, "var_#{variable}") { variableValue.to_i(16) }
-
-			if(variableValue.between?('0', 'F'))
-				self.class.send(:define_method, "registry_#{variable}") do 
-					send("V#{variableValue}") 
+											map {|c,i| name[i]}.join
+			
+			helper.instance_exec(self) do |cpu|
+				self.class.send(:define_method,"var_#{variable}") do
+					variableValue.to_i(16)
 				end
 
-				self.class.send(:define_method, "registry_#{variable}=") do |v|
-					send("V#{variableValue}=", v) 
+				if(variableValue.between?('0', 'F'))
+					self.class.send(:define_method, "registry_#{variable}") do 
+						cpu.send("V#{variableValue}")
+					end
+
+					self.class.send(:define_method, "registry_#{variable}=") do |v|
+						cpu.send("V#{variableValue}=", v)
+					end
 				end
 			end
 		end
 
-		send(matchingCommand)
-
-		self.methods.grep(/((var|registry)_.*)/).each do |helper|
-			self.class.send(:remove_method, "#{helper}")
-		end
+		send(matchingMethod, helper)
 	end
 
 	private

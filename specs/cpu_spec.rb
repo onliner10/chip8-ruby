@@ -2,17 +2,17 @@ require "./models/cpu"
 require "./specs/helpers/cpu_helper"
 
 class CPU
-	def opcode_9XY9
-		self.VE = registry_X
-		self.VF = registry_Y
+	def opcode_9XY9(helper)
+		self.VE = helper.registry_X
+		self.VF = helper.registry_Y
 	end
 
-	def opcode_9X98
-		self.registry_X = 2
+	def opcode_9X98(helper)
+		helper.registry_X = 2
 	end
 
-	def opcode_9KK7
-		self.VE = var_K
+	def opcode_9KK7(helper)
+		self.VE = helper.var_K
 	end
 end
 
@@ -47,6 +47,13 @@ describe CPU, "do_cycle creates helpers for opcodes" do
     cpu.do_cycle
 
     expect(cpu.V1).to eq(2)
+  end
+
+  it "throws exception when method_missing's name is not opcode" do
+    memory = CpuTestHelper::memory_with_single_opcode("111111111")
+    cpu = CPU.new(memory)
+
+    expect{cpu.A_NOT_EXISTING_AND_NOT_OPCODE}.to raise_error(NoMethodError)
   end
 
 end
