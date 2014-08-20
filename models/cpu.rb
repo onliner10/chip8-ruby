@@ -18,7 +18,7 @@ class CPU
 	end
 
 	def method_missing(name)
-		throw NoMethodError.new("Method #{name} not found") unless name =~ /[0-9a-fA-F]+/
+		raise NoMethodError.new("Method #{name} not found") unless name =~ /^[0-9a-fA-F]+$/
 
 		foundCommands = self.class.instance_methods(false).grep(/opcode_.*/)
 
