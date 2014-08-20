@@ -1,10 +1,10 @@
-require "./models/cpu_commands/registry_operation_commands"
-require "pry"
+Dir[File.dirname(__FILE__) + "/cpu_commands/*.rb"].each { |f| require f }
 
 class CPU
-
-	def initialize(memory)
+	def initialize(memory = Memory.new, stack = Stack.new)
 		@memory = memory
+		@stack = stack
+
 		define_registers
 
 		self.PC = "200".hex
@@ -35,9 +35,9 @@ class CPU
 		variables = matchingMethod.to_s.scan(/([G-Z])/).uniq.map { |x| x.first}
 		variables.map do |variable|
 			variableValue = matchingMethod.to_s.gsub('opcode_','').split('').
-											map.with_index(0).
-											select { |c,i| c == variable}.
-											map {|c,i| name[i]}.join
+			map.with_index(0).
+			select { |c,i| c == variable}.
+			map {|c,i| name[i]}.join
 			
 			helper.instance_exec(self) do |cpu|
 				self.class.send(:define_method,"var_#{variable}") do
@@ -63,7 +63,7 @@ class CPU
 	def define_registers
 		@registers = {}
 
-		registers_and_their_size = [["PC", 16], ["SP", 8], ["I", 16]]
+		registers_and_their_size = [["PC", 16], ["I", 16]]
 
 		#registers V0 to VF
 		0.upto(15) { |n| registers_and_their_size.push(["V" + n.to_s(16).upcase, 8]) }

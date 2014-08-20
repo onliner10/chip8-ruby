@@ -1,24 +1,4 @@
 class CPU
-	#jump to nnn
-	def opcode_1XXX(helper)
-		self.PC = helper.var_X
-	end
-
-	#Skip next instruction if Vx = kk.
-	def opcode_3XKK(helper)
-		self.PC += 2 if helper.registry_X == helper.var_K
-	end
-
-	#Skip next instruction if Vx != kk.
-	def opcode_4XKK(helper)
-		self.PC += 2 unless helper.registry_X == helper.var_K
-	end
-
-	#Skip next instruction if Vx = Vy.
-	def opcode_5XY0(helper)
-		self.PC += 2 if helper.registry_X == helper.registry_Y
-	end
-
 	#Set Vx = kk.
 	def opcode_6XKK(helper)
 		helper.registry_X = helper.var_K
@@ -108,17 +88,12 @@ class CPU
 		helper.registry_X = helper.registry_X * 2
 	end
 
-	# Skip next instruction if Vx != Vy.
-	def opcode_9XY0(helper)
-		self.PC += 2 if helper.registry_X != helper.registry_Y
-	end
-
 	def opcode_ANNN(helper)
 		self.I = helper.var_N
 	end
 
-	# Jump to location nnn + V0.
-	def opcode_BNNN(helper)
-		self.PC = helper.var_N + self.V0
+	#generates random value
+	def opcode_CXKK(helper)
+		helper.registry_X = Random.rand(0..255) & helper.var_K
 	end
 end
