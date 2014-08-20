@@ -27,7 +27,7 @@ class CPU
 			name.upcase =~ regex
 		end
 
-		raise "More than one (or none) command found for opcode #{name} (found commands: #{matchingCommands})" unless matchingMethods.one?
+		raise ArgumentError.new("More than one (or none) command found for opcode #{name} (found commands: #{matchingMethods})") unless matchingMethods.one?
 
 		matchingMethod = matchingMethods.first
 		helper = Class.new
@@ -63,14 +63,20 @@ class CPU
 	def define_registers
 		@registers = {}
 
-		registers = ["PC", "SP", "I"]
+		registers_and_their_size = [["PC", 16], ["SP", 8], ["I", 16]]
 
-		#registers V1 to VF
-		1.upto(15) { |n| registers.push("V" + n.to_s(16).upcase) }
+		#registers V0 to VF
+		0.upto(15) { |n| registers_and_their_size.push(["V" + n.to_s(16).upcase, 8]) }
 
-		registers.each do |register_name|
-			self.class.send(:define_method, "#{register_name}") { @registers["#{register_name}"] }
-			self.class.send(:define_method, "#{register_name}=") { |v| @registers["#{register_name}"] = v }
+		registers_and_their_size.each do |name, size|
+			self.class.send(:define_method, "#{name}") { @registers["#{name}"] }
+
+			self.class.send(:define_method, "#{name}=") do |v| 
+				mask = 0
+				size.times { |i| mask += 1 << i }
+
+				@registers["#{name}"] = v & mask
+			end
 		end
 	end
 end

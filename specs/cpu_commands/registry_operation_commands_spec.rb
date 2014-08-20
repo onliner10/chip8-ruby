@@ -172,7 +172,7 @@ describe CPU, "registry operation commands" do
 
     cpu.do_cycle
 
-    expect(cpu.V1).to eq(1)
+    expect(cpu.V1).to eq(0)
     expect(cpu.VF).to eq(1)
   end
 
@@ -202,6 +202,134 @@ describe CPU, "registry operation commands" do
 
     expect(cpu.V1).to eq(130)
     expect(cpu.VF).to eq(0)
+  end
+
+  it "can do bitwise shift (8XY6) (least significant bit is one)" do
+    memory = CpuTestHelper::memory_with_single_opcode("8126")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 11
+
+    cpu.do_cycle
+
+    expect(cpu.VF).to eq(1)
+    expect(cpu.V1).to eq(5)
+  end
+
+  it "can do bitwise shift (8XY6) (least significant bit is zero)" do
+    memory = CpuTestHelper::memory_with_single_opcode("8126")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 10
+
+    cpu.do_cycle
+
+    expect(cpu.VF).to eq(0)
+    expect(cpu.V1).to eq(5)
+  end
+
+  it "can substract (8XY7) (Vy > Vx)" do
+    memory = CpuTestHelper::memory_with_single_opcode("8127")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 10
+    cpu.V2 = 30
+
+    cpu.do_cycle
+
+    expect(cpu.VF).to eq(1)
+    expect(cpu.V1).to eq(20)
+  end
+
+  it "can substract (8XY7) (Vy <= Vx)" do
+    memory = CpuTestHelper::memory_with_single_opcode("8127")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 80
+    cpu.V2 = 30
+
+    cpu.do_cycle
+
+    expect(cpu.VF).to eq(0)
+    expect(cpu.V1).to eq(50)
+  end
+
+  it "can multiply (8XYE) (most significant byte is one)" do
+    memory = CpuTestHelper::memory_with_single_opcode("812E")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 200
+    cpu.V2 = 2
+
+    cpu.do_cycle
+
+    expect(cpu.VF).to eq(1)
+    expect(cpu.V1).to eq(144)
+  end
+
+  it "can multiply (8XYE) (most significant byte is zero)" do
+    memory = CpuTestHelper::memory_with_single_opcode("812E")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 11
+    cpu.V2 = 2
+
+    cpu.do_cycle
+
+    expect(cpu.VF).to eq(0)
+    expect(cpu.V1).to eq(22)
+  end
+
+  it "can multiply (9XY0) (not equal - skip condition true)" do
+    memory = CpuTestHelper::memory_with_single_opcode("9120")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 1
+    cpu.V2 = 2
+
+    cpu.do_cycle
+
+    expect(cpu.PC).to eq("204".to_i(16))
+  end
+
+  it "can multiply (9XY0) (equal - skip condition false)" do
+    memory = CpuTestHelper::memory_with_single_opcode("9120")
+
+    cpu = CPU.new(memory)
+    cpu.V1 = 2
+    cpu.V2 = 2
+
+    cpu.do_cycle
+
+    expect(cpu.PC).to eq("202".to_i(16))
+  end
+
+  it "can set I registry value (ANNN)" do
+    memory = CpuTestHelper::memory_with_single_opcode("A111")
+
+    cpu = CPU.new(memory)
+    cpu.do_cycle
+
+    expect(cpu.I).to eq("111".to_i(16))
+  end
+
+  it "can set I registry value (BNNN)" do
+    memory = CpuTestHelper::memory_with_single_opcode("B200")
+
+    cpu = CPU.new(memory)
+    cpu.V0 = "20".to_i(16)
+    cpu.do_cycle
+
+    expect(cpu.PC).to eq("220".to_i(16))
+  end
+
+  it "can generate random values (CXKK)" do
+    memory = CpuTestHelper::memory_with_single_opcode("C012")
+
+    cpu = CPU.new(memory)
+    cpu.do_cycle
+
+    expect(cpu.V0).not_to be_nil
   end
 
 end

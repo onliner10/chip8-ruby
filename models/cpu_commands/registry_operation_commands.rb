@@ -57,7 +57,6 @@ class CPU
 
 		if result > 255
 			self.VF = 1
-			result = result % 255
 		else
 			self.VF = 0
 		end	
@@ -77,5 +76,49 @@ class CPU
 		end
 
 		helper.registry_X = result
+	end
+
+	# Set Vx = Vx SHR 1.
+	#If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2.
+	def opcode_8XY6(helper)
+		binary = helper.registry_X.to_s(2)
+
+		self.VF = binary.split('').last.to_i
+		helper.registry_X = helper.registry_X / 2
+	end
+
+	# Set Vx = Vy - Vx, set VF = NOT borrow.
+	# If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+	def opcode_8XY7(helper)
+		if(helper.registry_Y > helper.registry_X)
+			self.VF = 1
+		else
+			self.VF = 0
+		end
+
+		helper.registry_X = (helper.registry_Y - helper.registry_X).abs
+	end
+
+	# Set Vx = Vx SHL 1.
+	# If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
+	def opcode_8XYE(helper)
+		most_significant_bit = helper.registry_X >> 7
+
+		self.VF = most_significant_bit
+		helper.registry_X = helper.registry_X * 2
+	end
+
+	# Skip next instruction if Vx != Vy.
+	def opcode_9XY0(helper)
+		self.PC += 2 if helper.registry_X != helper.registry_Y
+	end
+
+	def opcode_ANNN(helper)
+		self.I = helper.var_N
+	end
+
+	# Jump to location nnn + V0.
+	def opcode_BNNN(helper)
+		self.PC = helper.var_N + self.V0
 	end
 end
