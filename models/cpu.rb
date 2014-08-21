@@ -33,23 +33,25 @@ class CPU
 		helper = Class.new
 
 		variables = matchingMethod.to_s.scan(/([G-Z])/).uniq.map { |x| x.first}
+
 		variables.map do |variable|
 			variableValue = matchingMethod.to_s.gsub('opcode_','').split('').
-			map.with_index(0).
-			select { |c,i| c == variable}.
-			map {|c,i| name[i]}.join
+																   map.with_index(0).
+																   select { |c,i| c == variable}.
+																   map {|c,i| name[i]}.join
 			
+
 			helper.instance_exec(self) do |cpu|
-				self.class.send(:define_method,"var_#{variable}") do
+				define_singleton_method("var_#{variable}") do
 					variableValue.to_i(16)
 				end
 
 				if(variableValue.between?('0', 'F'))
-					self.class.send(:define_method, "registry_#{variable}") do 
+					define_singleton_method("registry_#{variable}") do 
 						cpu.send("V#{variableValue}")
 					end
 
-					self.class.send(:define_method, "registry_#{variable}=") do |v|
+					define_singleton_method("registry_#{variable}=") do |v|
 						cpu.send("V#{variableValue}=", v)
 					end
 				end

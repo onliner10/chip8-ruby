@@ -1,20 +1,6 @@
 require "./models/cpu"
+require "./models/stack"
 require "./specs/helpers/cpu_helper"
-
-class CPU
-	def opcode_9XY9(helper)
-		self.VE = helper.registry_X
-		self.VF = helper.registry_Y
-	end
-
-	def opcode_9X98(helper)
-		helper.registry_X = 2
-	end
-
-	def opcode_9KK7(helper)
-		self.VE = helper.var_K
-	end
-end
 
 describe CPU, "do_cycle creates helpers for opcodes" do
 
@@ -56,4 +42,44 @@ describe CPU, "do_cycle creates helpers for opcodes" do
     expect{cpu.A_NOT_EXISTING_AND_NOT_OPCODE}.to raise_error(NoMethodError)
   end
 
+  it "should not preserve helper variables between opcodes" do
+    memory = Memory.new
+
+    #Set V1 = 11
+    memory.load("200".hex, "61".to_i(16))
+    memory.load("201".hex, "11".to_i(16))
+
+    # Set V2 = V1
+    memory.load("202".hex, "82".to_i(16))
+    memory.load("203".hex, "10".to_i(16))
+
+    # Mocked opcode
+    memory.load("204".hex, "91".to_i(16))
+    memory.load("205".hex, "16".to_i(16))
+
+    cpu = CPU.new(memory)
+    3.times { cpu.do_cycle }
+
+    helper_methods = cpu.instance_variable_get(:@helper_methods)
+    expect(helper_methods).to eq([:var_K, :registry_K, :registry_K=])
+  end
+
+  class CPU
+    def opcode_9XY9(helper)
+      self.VE = helper.registry_X
+      self.VF = helper.registry_Y
+    end
+
+    def opcode_9X98(helper)
+      helper.registry_X = 2
+    end
+
+    def opcode_9KK7(helper)
+      self.VE = helper.var_K
+    end
+
+    def opcode_9KK6(helper)
+      @helper_methods = helper.methods.grep(/(var|registry)\_[F-Z]/)
+    end
+  end
 end

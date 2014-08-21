@@ -1,3 +1,5 @@
+require "./models/memory"
+
 class CpuTestHelper
 	def self.memory_with_single_opcode(opcode)
 	    memory = Memory.new

@@ -21,7 +21,7 @@ class Memory
 
 	def instruction_at(address)
 		instruction = (@ram[address] << 8) + @ram[address + 1]
-		(instruction.to_s(16)).upcase
+		(instruction.to_s(16).rjust(4, '0')).upcase
 	end
 
 end
