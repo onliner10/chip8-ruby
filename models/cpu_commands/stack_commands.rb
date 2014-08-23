@@ -5,6 +5,6 @@ class CPU
 
 	def opcode_2NNN(helper)
 		@stack.push(self.PC)
-		self.PC = helper.var_K
+		self.PC = helper.var_N
 	end
 end
