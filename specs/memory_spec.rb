@@ -32,6 +32,21 @@ describe Memory, "#instruction_at" do
     expect(byte).to eq(100)
   end
 
+  it "can give range" do
+    memory = Memory.new
+    memory.load("200".hex, 100)
+    memory.load("201".hex, 120)
+    memory.load("202".hex, 130)
+    memory.load("203".hex, 140)
+
+    range = memory.range("200".hex, "203".hex)
+
+    expect(range[0]).to eq(100)
+    expect(range[1]).to eq(120)
+    expect(range[2]).to eq(130)
+    expect(range[3]).to eq(140)
+  end
+
   it "gives 4 letter instruction at specified address when zero is the two LAST characters of opcode" do
     memory = Memory.new
     memory.load("200".hex, "65".to_i(16))

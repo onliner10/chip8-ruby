@@ -13,8 +13,6 @@ describe VirtualMachine, "" do
   	memory = Memory.new
     virtualMachine = VirtualMachine.new(memory)
 
-    virtualMachine.load_file_to_memory("./specs/assets/sample_game")
-
     expect(memory.byte_at(0)).to eq("F0".hex)
     expect(memory.byte_at(36)).to eq("10".hex)
   end

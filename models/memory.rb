@@ -28,4 +28,11 @@ class Memory
 		@ram[address]
 	end
 
+	def range(from, to)
+		result = []
+		from.upto(to) { |addr| result.push(@ram[addr])}
+
+		result
+	end
+
 end
