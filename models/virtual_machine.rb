@@ -1,11 +1,12 @@
 require './models/memory'
+require './models/display'
+
 
 class VirtualMachine
 
 	def initialize(memory)
 		@memory = memory
-
-		load_file_to_memory("./models/assets/sprites.hex", 0)
+		@memory.load(0, Display.sprites)
 	end
 
 	def load_file_to_memory(path, address = 512)

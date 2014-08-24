@@ -1,4 +1,7 @@
 Dir[File.dirname(__FILE__) + "/cpu_commands/*.rb"].each { |f| require f }
+require "./models/keyboard"
+require "./models/stack"
+require "./models/memory"
 
 class CPU
 	def initialize(memory = Memory.new, stack = Stack.new, keyboard = Keyboard.new)

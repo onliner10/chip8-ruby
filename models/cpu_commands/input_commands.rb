@@ -12,4 +12,15 @@ class CPU
 		self.PC += 2 unless @keyboard.is_pressed?(helper.registry_X)
 	end
 
+	# Fx0A - LD Vx, K
+	# Wait for a key press, store the value of the key in Vx.
+	def opcode_FX0A(helper)
+		if(@keyboard.get_pressed == nil)
+			self.PC -= 2
+			return
+		end
+
+		helper.registry_X = @keyboard.get_pressed
+	end
+
 end

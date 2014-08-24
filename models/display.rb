@@ -1,4 +1,13 @@
 class Display
+	def self.sprites
+		binaryFile = File.binread("./models/assets/sprites.hex")
+		binaryFile.unpack("C*")
+	end
+
+	def self.sprite_offset_for(digit)
+		digit * 5
+	end
+
 	def draw_sprite(sprite, position = {})
 		raise ArgumentError.new("Coordinates outside of display (64x32)") if position[:x] > 63 || position[:y] > 31
 

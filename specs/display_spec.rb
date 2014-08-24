@@ -2,6 +2,16 @@ require "./models/display"
 
 describe Display, "" do
 
+	it "can return sprites" do
+		expect(Display.sprites[0]).to eq("F0".hex)
+    	expect(Display.sprites[36]).to eq("10".hex)
+	end
+
+	it "can return sprite offset" do
+		expect(Display.sprite_offset_for("B".hex)).to eq(55)
+    	expect(Display.sprite_offset_for("0".hex)).to eq(0)
+	end
+
 	it "raises exception when trying to draw outside the screen" do
 		display = Display.new
 		

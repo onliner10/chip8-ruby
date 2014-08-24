@@ -225,4 +225,17 @@ describe CPU, "registry operation commands" do
     expect(cpu.V0).not_to be_nil
   end
 
+  it "can store BCD representation (FX33)" do
+    memory = CpuTestHelper::memory_with_single_opcode("F133")
+
+    cpu = CPU.new(memory)
+    cpu.I = "250".hex
+    cpu.V1 = 123
+    cpu.do_cycle
+
+    expect(memory.byte_at("250".hex)).to eq(1)
+    expect(memory.byte_at("251".hex)).to eq(2)
+    expect(memory.byte_at("252".hex)).to eq(3)
+  end
+
 end

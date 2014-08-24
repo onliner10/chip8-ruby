@@ -54,4 +54,26 @@ describe CPU, "input commands" do
 	    expect(cpu.PC).to eq("202".to_i(16))
 	end
 
+	it "can wait for key press (FX0A  - key NOT pressed - should not change PC)" do
+	    memory = CpuTestHelper::memory_with_single_opcode("F10A")
+	    keyboard_mock = CpuTestHelper::keyboard_mock
+
+	    cpu = CPU.new(memory, Stack.new, keyboard_mock)
+	    cpu.do_cycle
+
+	    expect(cpu.PC).to eq("200".to_i(16))
+	end
+
+	it "can wait for key press (FX0A  - key IS pressed - should change PC and store key in register)" do
+	    memory = CpuTestHelper::memory_with_single_opcode("F10A")
+	    keyboard_mock = CpuTestHelper::keyboard_mock
+	    keyboard_mock.press("A".hex)
+
+	    cpu = CPU.new(memory, Stack.new, keyboard_mock)
+	    cpu.do_cycle
+
+	    expect(cpu.PC).to eq("202".to_i(16))
+	    expect(cpu.V1).to eq("A".hex)
+	end
+
 end

@@ -13,19 +13,23 @@ class CpuTestHelper
 	def self.keyboard_mock()
 		keyboard_mock = Class.new do
 			def initialize
-				@pressed = []
+				@pressed = nil
 			end
 
 			def press(key)
-				@pressed.push(key)
+				@pressed = key
 			end
 
 			def is_pressed?(key)
-				if(@pressed.include?(key))
+				if(get_pressed == key)
 					return true
 				end
 
 				false
+			end
+
+			def get_pressed
+				@pressed
 			end
 	    end
 

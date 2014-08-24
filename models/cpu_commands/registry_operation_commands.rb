@@ -96,4 +96,13 @@ class CPU
 	def opcode_CXKK(helper)
 		helper.registry_X = Random.rand(0..255) & helper.var_K
 	end
+
+	# Store BCD (hundreds/tens/ones) representation of Vx in memory locations I, I+1, and I+2.
+	def opcode_FX33(helper)
+		value = helper.registry_X
+		
+		@memory.load(self.I, value / 100)
+		@memory.load(self.I + 1, (value / 10) % 10)
+		@memory.load(self.I + 2, value % 10)
+	end
 end
