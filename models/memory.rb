@@ -24,4 +24,8 @@ class Memory
 		(instruction.to_s(16).rjust(4, '0')).upcase
 	end
 
+	def byte_at(address)
+		@ram[address]
+	end
+
 end

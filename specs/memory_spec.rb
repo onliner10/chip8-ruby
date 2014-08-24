@@ -23,6 +23,15 @@ describe Memory, "#instruction_at" do
     expect(instruction).to eq("6555")
   end
 
+  it "gives byte at specified address" do
+    memory = Memory.new
+    memory.load("200".hex, 100)
+
+    byte = memory.byte_at("200".hex)
+
+    expect(byte).to eq(100)
+  end
+
   it "gives 4 letter instruction at specified address when zero is the two LAST characters of opcode" do
     memory = Memory.new
     memory.load("200".hex, "65".to_i(16))
