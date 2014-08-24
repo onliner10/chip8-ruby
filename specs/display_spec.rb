@@ -2,6 +2,13 @@ require "./models/display"
 
 describe Display, "" do
 
+	it "raises exception when trying to draw outside the screen" do
+		display = Display.new
+		
+		expect{display.draw_sprite([1], :x => 30, :y => 33)}.to raise_error(ArgumentError)
+		expect{display.draw_sprite([1], :x => 65, :y => 25)}.to raise_error(ArgumentError)
+	end
+
 	it "can draw sprites (no collision)" do
 		display = Display.new
 		collision = display.draw_sprite([0,1,1,0,0,0,1,0], :x => 2, :y => 2)
@@ -41,5 +48,17 @@ describe Display, "" do
 
 		expect(buffer[31][30..37]).to eq([1,1,1,1,1,1,1,1])
 		expect(buffer[0][30..37]).to eq([1,1,1,1,1,1,1,1])
+	end
+
+	it "can clear the display" do
+		display = Display.new
+		display.draw_sprite([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], :x => 30, :y => 31)
+		display.draw_sprite([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], :x => 40, :y => 0)
+
+		display.clear
+
+		display.buffer.each do |row|
+			row.each { |cell| expect(cell).to eq(0)  }
+		end
 	end
 end

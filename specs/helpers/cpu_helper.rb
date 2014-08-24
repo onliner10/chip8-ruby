@@ -9,4 +9,26 @@ class CpuTestHelper
 
 	    memory
 	end
+
+	def self.keyboard_mock()
+		keyboard_mock = Class.new do
+			def initialize
+				@pressed = []
+			end
+
+			def press(key)
+				@pressed.push(key)
+			end
+
+			def is_pressed?(key)
+				if(@pressed.include?(key))
+					return true
+				end
+
+				false
+			end
+	    end
+
+	    keyboard_mock.new
+	end
 end

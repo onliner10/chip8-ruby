@@ -1,7 +1,10 @@
 class Display
 	def draw_sprite(sprite, position = {})
+		raise ArgumentError.new("Coordinates outside of display (64x32)") if position[:x] > 63 || position[:y] > 31
+
 		col = position[:x]
 		row = position[:y]
+
 		any_erased = 0
 
 		sprite.each_slice(8) do |byte|
@@ -20,6 +23,12 @@ class Display
 		end
 
 		any_erased
+	end
+
+	def clear
+		32.times do |row|
+			64.times {|col| buffer[row][col] = 0}
+		end
 	end
 
 	def buffer
