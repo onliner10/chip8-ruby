@@ -1,4 +1,4 @@
-class CPU
+class Interpreter
 	def opcode_00EE(helper)
 		self.PC = @stack.pop
 	end

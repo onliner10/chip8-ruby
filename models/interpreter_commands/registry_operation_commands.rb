@@ -1,4 +1,4 @@
-class CPU
+class Interpreter
 	#Set Vx = kk.
 	def opcode_6XKK(helper)
 		helper.registry_X = helper.var_K

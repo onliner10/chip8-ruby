@@ -1,4 +1,4 @@
-class CPU
+class Interpreter
 
 	# Ex9E - SKP Vx
 	# Skip next instruction if key with the value of Vx is pressed.

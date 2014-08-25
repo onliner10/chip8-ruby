@@ -1,9 +1,9 @@
-Dir[File.dirname(__FILE__) + "/cpu_commands/*.rb"].each { |f| require f }
+Dir[File.dirname(__FILE__) + "/interpreter_commands/*.rb"].each { |f| require f }
 require "./models/keyboard"
 require "./models/stack"
 require "./models/memory"
 
-class CPU
+class Interpreter
 	def initialize(memory = Memory.new, stack = Stack.new, keyboard = Keyboard.new)
 		@memory = memory
 		@stack = stack
@@ -14,7 +14,7 @@ class CPU
 		self.PC = "200".hex
 	end
 
-	def do_cycle
+	def execute
 		opcode = @memory.instruction_at(self.PC)
 		self.PC += 2
 
@@ -45,18 +45,18 @@ class CPU
 																   map {|c,i| name[i]}.join
 			
 
-			helper.instance_exec(self) do |cpu|
+			helper.instance_exec(self) do |interpreter|
 				define_singleton_method("var_#{variable}") do
 					variableValue.to_i(16)
 				end
 
 				if(variableValue.between?('0', 'F'))
 					define_singleton_method("registry_#{variable}") do 
-						cpu.send("V#{variableValue}")
+						interpreter.send("V#{variableValue}")
 					end
 
 					define_singleton_method("registry_#{variable}=") do |v|
-						cpu.send("V#{variableValue}=", v)
+						interpreter.send("V#{variableValue}=", v)
 					end
 				end
 			end

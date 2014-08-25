@@ -1,45 +1,45 @@
-require "./models/cpu"
+require "./models/interpreter"
 require "./models/stack"
-require "./specs/helpers/cpu_helper"
+require "./specs/helpers/interpreter_helper"
 
-describe CPU, "do_cycle creates helpers for opcodes" do
+describe Interpreter, "execute creates helpers for opcodes" do
 
 	it "creates temporary value helpers for each opcode (getters)" do
-    memory = CpuTestHelper::memory_with_single_opcode("9117")
+    memory = InterpreterTestHelper::memory_with_single_opcode("9117")
 
-    cpu = CPU.new(memory)
-    cpu.do_cycle
+    interpreter = Interpreter.new(memory)
+    interpreter.execute
 
-    expect(cpu.VE).to eq("11".to_i(16))
+    expect(interpreter.VE).to eq("11".to_i(16))
   end
 
   it "creates temporary register helpers for each opcode (getters)" do
-    memory = CpuTestHelper::memory_with_single_opcode("9129")
+    memory = InterpreterTestHelper::memory_with_single_opcode("9129")
 
-    cpu = CPU.new(memory)
-    cpu.V1 = 11
-    cpu.V2 = 22
-    cpu.do_cycle
+    interpreter = Interpreter.new(memory)
+    interpreter.V1 = 11
+    interpreter.V2 = 22
+    interpreter.execute
 
-    expect(cpu.VE).to eq(11)
-    expect(cpu.VF).to eq(22)
+    expect(interpreter.VE).to eq(11)
+    expect(interpreter.VF).to eq(22)
   end
 
   it "creates temporary register helpers for each opcode (setters)" do
-    memory = CpuTestHelper::memory_with_single_opcode("9198")
+    memory = InterpreterTestHelper::memory_with_single_opcode("9198")
 
-    cpu = CPU.new(memory)
-    cpu.V1 = 1
-    cpu.do_cycle
+    interpreter = Interpreter.new(memory)
+    interpreter.V1 = 1
+    interpreter.execute
 
-    expect(cpu.V1).to eq(2)
+    expect(interpreter.V1).to eq(2)
   end
 
   it "throws exception when method_missing's name is not opcode" do
-    memory = CpuTestHelper::memory_with_single_opcode("111111111")
-    cpu = CPU.new(memory)
+    memory = InterpreterTestHelper::memory_with_single_opcode("111111111")
+    interpreter = Interpreter.new(memory)
 
-    expect{cpu.A_NOT_EXISTING_AND_NOT_OPCODE}.to raise_error(NoMethodError)
+    expect{interpreter.A_NOT_EXISTING_AND_NOT_OPCODE}.to raise_error(NoMethodError)
   end
 
   it "should not preserve helper variables between opcodes" do
@@ -57,14 +57,14 @@ describe CPU, "do_cycle creates helpers for opcodes" do
     memory.load("204".hex, "91".to_i(16))
     memory.load("205".hex, "16".to_i(16))
 
-    cpu = CPU.new(memory)
-    3.times { cpu.do_cycle }
+    interpreter = Interpreter.new(memory)
+    3.times { interpreter.execute }
 
-    helper_methods = cpu.instance_variable_get(:@helper_methods)
+    helper_methods = interpreter.instance_variable_get(:@helper_methods)
     expect(helper_methods).to eq([:var_K, :registry_K, :registry_K=])
   end
 
-  class CPU
+  class Interpreter
     def opcode_9XY9(helper)
       self.VE = helper.registry_X
       self.VF = helper.registry_Y

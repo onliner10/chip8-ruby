@@ -1,4 +1,4 @@
-class CPU
+class Interpreter
 	#jump to nnn
 	def opcode_1XXX(helper)
 		self.PC = helper.var_X
