@@ -22,9 +22,9 @@ describe Timer, "" do
 		is_it_working = false
 
 		timer = Timer.new
-		timer.when_complete { puts "DOBRZE" }
-		timer.set(10)
-		sleep(1 / 6)
+		timer.when_complete { is_it_working = true }
+		timer.set(5)
+		sleep(10.0 / 60.0)
 
 		expect(is_it_working).to eq(true)
 	end
