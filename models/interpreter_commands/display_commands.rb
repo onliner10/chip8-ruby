@@ -11,4 +11,9 @@ class Interpreter
 		@display.clear
 	end
 
+	# Gives sprite location for digit stored in Vx
+	def opcode_FX29(helper)
+		offset = Display.sprite_offset_for(helper.registry_X)
+		self.I = offset
+	end
 end

@@ -3,10 +3,12 @@ class Timer
 	def initialize
 		@value = 0
 		@when_complete = Proc.new { }
+		@when_activated = Proc.new { }
 	end
 
 	def set(val)
 		raise ArgumentError.new("Timer value cannot be less than zero!") if(val < 0)
+		@when_activated.call
 
 		@value = val
 		run_counter_thread
@@ -18,6 +20,10 @@ class Timer
 
 	def when_complete(&block)
 		@when_complete = block
+	end
+
+	def when_activated(&block)
+		@when_activated = block
 	end
 
 	private

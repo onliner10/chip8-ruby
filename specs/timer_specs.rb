@@ -28,4 +28,14 @@ describe Timer, "" do
 
 		expect(is_it_working).to eq(true)
 	end
+
+	it "should execute specific action when timer activated" do
+		is_it_working = false
+
+		timer = Timer.new
+		timer.when_activated { is_it_working = true }
+		timer.set(100)
+
+		expect(is_it_working).to eq(true)
+	end
 end

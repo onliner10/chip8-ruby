@@ -33,4 +33,13 @@ describe Interpreter, "display commands" do
 		interpreter.execute
 	end
 
+	it "can give sprite location for specified digit (FX29)" do
+		memory = InterpreterTestHelper::memory_with_single_opcode("F129")
+		interpreter = Interpreter.new(memory)
+		interpreter.V1 = 'A'.hex
+
+		interpreter.execute
+		expect(interpreter.I).to eq(50)
+	end
+
 end

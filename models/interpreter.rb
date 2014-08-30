@@ -2,13 +2,22 @@ Dir[File.dirname(__FILE__) + "/interpreter_commands/*.rb"].each { |f| require f 
 require "./models/keyboard"
 require "./models/stack"
 require "./models/memory"
+require "./models/timer"
+require "./models/win_beeper"
 
 class Interpreter
-	def initialize(memory = Memory.new, stack = Stack.new, keyboard = Keyboard.new, display = Display.new)
+	def initialize(
+		memory = Memory.new,
+		stack = Stack.new, 
+		keyboard = Keyboard.new, 
+		display = Display.new, 
+		beeper = WinBeeper.new)
+
 		@memory = memory
 		@stack = stack
 		@keyboard = keyboard
 		@display = display
+		@beeper = beeper
 
 		define_registers
 
@@ -64,6 +73,20 @@ class Interpreter
 		end
 
 		send(matchingMethod, helper)
+	end
+
+	def DT
+		@delay_timer ||= Timer.new
+	end
+
+	def ST
+		if(@sound_timer == nil)
+			@sound_timer = Timer.new
+			@sound_timer.when_activated { @beeper.start }
+			@sound_timer.when_complete { @beeper.end }
+		end
+
+		@sound_timer
 	end
 
 	private
