@@ -12,7 +12,7 @@ describe Memory, "#load" do
   end
 end
 
-describe Memory, "#instruction_at" do
+describe Memory, "" do
   it "gives instruction at specified address" do
     memory = Memory.new
     memory.load("200".hex, "65".to_i(16))
@@ -45,6 +45,16 @@ describe Memory, "#instruction_at" do
     expect(range[1]).to eq(120)
     expect(range[2]).to eq(130)
     expect(range[3]).to eq(140)
+  end
+
+  it "can give range in bits" do
+    memory = Memory.new
+    memory.load("200".hex, 137)
+
+    range = memory.range_bits("200".hex, "200".hex)
+
+    expect(range.size).to eq(8)
+    expect(range).to eq([1,0,0,0,1,0,0,1])
   end
 
   it "gives 4 letter instruction at specified address when zero is the two LAST characters of opcode" do

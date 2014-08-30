@@ -4,10 +4,11 @@ require "./models/stack"
 require "./models/memory"
 
 class Interpreter
-	def initialize(memory = Memory.new, stack = Stack.new, keyboard = Keyboard.new)
+	def initialize(memory = Memory.new, stack = Stack.new, keyboard = Keyboard.new, display = Display.new)
 		@memory = memory
 		@stack = stack
 		@keyboard = keyboard
+		@display = display
 
 		define_registers
 

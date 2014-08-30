@@ -35,4 +35,20 @@ class Memory
 		result
 	end
 
+	def range_bits(from, to)
+		result = []
+		from.upto(to) do |addr|
+			byte = byte_at(addr)
+
+			while byte > 0
+				bit = byte % 2
+				result.push(bit)
+
+				byte = byte / 2
+			end
+		end
+
+		result.reverse
+	end
+
 end
